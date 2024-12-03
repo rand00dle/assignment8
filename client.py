@@ -1,17 +1,13 @@
 import socket
 
-valid_queries = [
-    "What is the average moisture inside my kitchen fridge in the past three hours?",
-    "What is the average water consumption per cycle in my smart dishwasher?",
-    "Which device consumed more electricity among my three IoT devices (two refrigerators and a dishwasher)?"
-]
+def display_menu():
+    print("\nMenu:")
+    print("1. What is the average moisture inside my kitchen fridge in the past three hours?")
+    print("2. What is the average water consumption per cycle in my smart dishwasher?")
+    print("3. Which device consumed more electricity among my three IoT devices (two refrigerators and a dishwasher)?")
+    print("4. Exit")
 
-def display_valid_queries():
-    print("Sorry, this query cannot be processed. Please try one of the following:")
-    for query in valid_queries:
-        print(f" - {query}")
-
-# user inputs ip address and port number
+# User inputs IP address and port number
 ip_addr = input("Enter IP address: ")
 server_port = int(input("Enter port number: "))
 
@@ -20,22 +16,28 @@ client_socket.connect((ip_addr, server_port))
 
 try:
     while True:
-        # user inputs message
-        message = input("Enter your query: ")
-        
-        if message.lower() == "exit":
+        # Receive and display menu options from the server
+        menu = client_socket.recv(1024).decode()
+        print(menu)
+
+        # Get user choice
+        choice = input("Your choice: ").strip()
+
+        if choice == "4":  # Exit option
+            client_socket.send(choice.encode('utf-8'))
+            print("Exiting...")
             break
-        
-        if message in valid_queries:
-            # sends query to be encoded
-            client_socket.send(message.encode('utf-8'))
-            response = client_socket.recv(1024) # gets the response from other user
-            print("Server replied:", response.decode('utf-8'))  # displays message from the other user
-        else:
-            # Display error mesage for invalid queries
-            display_valid_queries()
-            
+
+        # Send the choice to the server
+        client_socket.send(choice.encode('utf-8'))
+
+# Receive and display the server's response
+        response = client_socket.recv(1024).decode('utf-8')
+        print("\nServer replied:")
+        print(response)
+        print()  # Add blank line for better readability
+
 except Exception as e:
-    print(f"Error: {e}") # error handling
+    print(f"Error: {e}")  # Error handling
 finally:
-    client_socket.close() # terminate connection with server
+    client_socket.close()  # Terminate connection with server
