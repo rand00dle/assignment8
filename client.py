@@ -1,10 +1,17 @@
 import socket
 
+# Define valid queries
+valid_queries = {
+    "1": "What is the average moisture inside my kitchen fridge in the past three hours?",
+    "2": "What is the average water consumption per cycle in my smart dishwasher?",
+    "3": "Which device consumed more electricity among my three IoT devices (two refrigerators and a dishwasher)?"
+}
+
 def display_menu():
-    print("\nMenu:")
-    print("1. What is the average moisture inside my kitchen fridge in the past three hours?")
-    print("2. What is the average water consumption per cycle in my smart dishwasher?")
-    print("3. Which device consumed more electricity among my three IoT devices (two refrigerators and a dishwasher)?")
+    """Display the menu of valid queries."""
+    print("\nSelect a query:")
+    for i, query in valid_queries.items():
+        print(f"{i}. {query}")
     print("4. Exit")
 
 # User inputs IP address and port number
@@ -16,19 +23,26 @@ client_socket.connect((ip_addr, server_port))
 
 try:
     while True:
-        # Receive and display menu options from the server
-        menu = client_socket.recv(1024).decode()
-        print(menu)
+        # Display menu to the user
+        display_menu()
+        choice = input("\nEnter your choice (1-4): ").strip()
 
-        # Get user choice
-        choice = input("Your choice: ").strip()
-
+        # Handle valid choices
         if choice == "4":  # Exit option
-            client_socket.send(choice.encode('utf-8'))
             print("Exiting...")
+            client_socket.send(choice.encode('utf-8'))
             break
 
-        # Send the choice to the server
+        # Validate user input
+        if choice not in valid_queries:
+            print(
+                "Sorry, this query cannot be processed. "
+                "Please try one of the following:\n" +
+                "\n".join(f"{key}. {query}" for key, query in valid_queries.items())
+            )
+            continue
+
+        # Send the valid query to the server
         client_socket.send(choice.encode('utf-8'))
 
 # Receive and display the server's response
