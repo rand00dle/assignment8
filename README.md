@@ -1,3 +1,6 @@
+Ramon Quintana 
+Randolf Pangilin Jr
+Group #16
 # assignment8
 
 To run the server:
