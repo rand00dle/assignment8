@@ -1,5 +1,5 @@
-Ramon Quintana 
-Randolf Pangilin Jr
+Ramon Quintana, 
+Randolf Pangilin Jr,
 Group #16
 # assignment8
 
